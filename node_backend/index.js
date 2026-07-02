@@ -5,7 +5,7 @@ import cors from 'cors'
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 
-// 📋 Swagger API Specifications Configuration Options
+// Swagger API Specifications Configuration Options
 const swaggerOptions = {
     definition: {
         openapi: '3.0.0',
@@ -37,13 +37,13 @@ app.use(express.json());
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 
-console.log("🔍 MONGO_URI loaded:", process.env.MONGODB_URI ? "YES" : "UNDEFINED ");
+console.log("MONGO_URI loaded:", process.env.MONGODB_URI ? "YES" : "UNDEFINED ");
 
 mongoose.connect(process.env.MONGODB_URI, {
     serverSelectionTimeoutMS: 5000,
 })
-.then(() => console.log(" MongoDB Connected!"))
-.catch(err => console.error(" MongoDB Error:", err.message));
+.then(() => console.log("MongoDB Connected!"))
+.catch(err => console.error("MongoDB Error:", err.message));
 
 const itemSchema = new mongoose.Schema({
     name:{ type: String, require: true},
@@ -73,15 +73,14 @@ app.get('/items', async (req, res) => {
     
 });
 
-// ⚡ POST Route: Save to MongoDB Cloud AND Sync to Python FastAPI
+// POST Route: Save to MongoDB Cloud AND Sync to Python FastAPI
 app.post('/items', async (req, res) => {
     try {
         const { name, price } = req.body;
         
-        // 1. Save to MongoDB Cloud first
         const newItem = await Item.create({ name, price });
         
-        // 2. 🔄 BACKGROUND SYNC: Forward this data to Python FastAPI
+        // BACKGROUND SYNC: Forward this data to Python FastAPI
         try {
             const pythonResponse = await fetch('http://localhost:8000/items/', {
                 method: 'POST',
@@ -95,15 +94,14 @@ app.post('/items', async (req, res) => {
             });
             
             if (pythonResponse.ok) {
-                console.log("🔄 Sync Success: Data mirrored to Python SQLite!");
+                console.log("Sync Success: Data mirrored to Python SQLite!");
             } else {
-                console.log("⚠️ Sync Warning: Python server rejected the mirrored data.");
+                console.log("Sync Warning: Python server rejected the mirrored data.");
             }
         } catch (syncErr) {
-            console.error("❌ Sync Error: Python backend is down, couldn't mirror data.", syncErr.message);
+            console.error("Sync Error: Python backend is down, couldn't mirror data.", syncErr.message);
         }
         
-        // 3. Return response to your React Frontend
         res.status(201).json({ 
             message: "Item securely saved to MongoDB and synced to Python!", 
             data: newItem 
@@ -112,4 +110,4 @@ app.post('/items', async (req, res) => {
         res.status(400).json({ error: "Failed to create item" });
     }
 });
-app.listen(PORT, () => console.log(` Server on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server on http://localhost:${PORT}`));
