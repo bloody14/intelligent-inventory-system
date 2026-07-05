@@ -28,8 +28,8 @@ export function NeuralChatCanvas() {
     setChatLog(prev => [...prev, { role: "user", content: userMessage }]);
 
     try {
-      // Connect to Python FastAPI RAG backend at 8000
-      const res = await fetch("http://localhost:8000/ai-chat", {
+      // Connect to Python FastAPI RAG backend dynamically
+      const res = await fetch(`${process.env.NEXT_PUBLIC_AI_URL}/ai-chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_message: userMessage })
