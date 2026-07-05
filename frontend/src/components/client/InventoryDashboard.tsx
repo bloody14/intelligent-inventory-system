@@ -17,7 +17,7 @@ export function InventoryDashboard() {
     setError(null);
     try {
       // Connect to the Node MongoDB backend at 5000
-      const res = await fetch("http://localhost:5000/items");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/items`);
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const data = await res.json();
       setItems(data);
@@ -39,7 +39,7 @@ export function InventoryDashboard() {
     
     setIsSubmitting(true);
     try {
-      const res = await fetch("http://localhost:5000/items", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/items`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newName, price: parseFloat(newPrice) })
